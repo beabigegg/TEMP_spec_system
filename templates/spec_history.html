@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}操作歷史 - {{ spec.spec_code }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-0">操作歷史紀錄</h2>
+    <p class="lead text-muted">規範編號: {{ spec.spec_code }}</p>
+  </div>
+  <a href="{{ url_for('temp_spec.spec_list') }}" class="btn btn-secondary"><i class="bi bi-arrow-left-circle me-2"></i>返回總表</a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <ul class="list-group list-group-flush">
+      {% for entry in history %}
+      <li class="list-group-item">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">
+            <span class="badge bg-primary rounded-pill me-2">{{ entry.action }}</span>
+            由 <strong>{{ entry.user.username if entry.user else '[已刪除的使用者]' }}</strong> 執行
+          </h5>
+          <small>{{ entry.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+        </div>
+        <p class="mb-1 mt-2">{{ entry.details }}</p>
+      </li>
+      {% else %}
+      <li class="list-group-item">沒有任何歷史紀錄。</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

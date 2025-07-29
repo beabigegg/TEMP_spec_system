@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}帳號管理{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">帳號管理</h2>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- 新增使用者表單 -->
+<div class="card mb-4">
+  <div class="card-header">
+    新增使用者
+  </div>
+  <div class="card-body">
+    <form action="{{ url_for('admin.create_user') }}" method="post" class="row g-3">
+      <div class="col-md-4">
+        <input type="text" name="username" class="form-control" placeholder="使用者名稱" required>
+      </div>
+      <div class="col-md-4">
+        <input type="password" name="password" class="form-control" placeholder="密碼" required>
+      </div>
+      <div class="col-md-2">
+        <select name="role" class="form-select" required>
+          <option value="viewer">Viewer</option>
+          <option value="editor">Editor</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">建立</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 使用者列表 -->
+<div class="card">
+  <div class="card-header">
+    現有使用者列表
+  </div>
+  <div class="card-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>使用者名稱</th>
+          <th>權限</th>
+          <th>上次登入</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <form action="{{ url_for('admin.edit_user', user_id=user.id) }}" method="post">
+            <td>
+              <select name="role" class="form-select form-select-sm">
+                <option value="viewer" {% if user.role == 'viewer' %}selected{% endif %}>Viewer</option>
+                <option value="editor" {% if user.role == 'editor' %}selected{% endif %}>Editor</option>
+                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+              </select>
+            </td>
+            <td>{{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else '從未' }}</td>
+            <td>
+              <button type="submit" class="btn btn-sm btn-success">更新權限</button>
+            </td>
+          </form>
+          <td>
+            <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="post" onsubmit="return confirm('確定要刪除這位使用者嗎？');">
+              <button type="submit" class="btn btn-sm btn-danger" {% if user.id == current_user.id %}disabled{% endif %}>刪除</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

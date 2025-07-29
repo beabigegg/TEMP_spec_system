@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}暫時規範總表{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">暫時規範總表</h2>
+  {% if current_user.role in ['editor', 'admin'] %}
+  <a href="{{ url_for('temp_spec.create_temp_spec') }}" class="btn btn-primary"><i class="bi bi-plus-circle-fill me-2"></i>建立新規範</a>
+  {% endif %}
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {# This block is now handled by the Toast container in base.html #}
+  {% endif %}
+{% endwith %}
+
+<!-- 搜尋與篩選表單 -->
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="get" action="{{ url_for('temp_spec.spec_list') }}" class="row g-3 align-items-center">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" name="query" class="form-control" placeholder="搜尋編號或主題..." value="{{ query or '' }}">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <select name="status" class="form-select">
+          <option value="">所有狀態</option>
+          <option value="pending_approval" {% if status == 'pending_approval' %}selected{% endif %}>待生效</option>
+          <option value="active" {% if status == 'active' %}selected{% endif %}>已生效</option>
+          <option value="terminated" {% if status == 'terminated' %}selected{% endif %}>已終止</option>
+          <option value="expired" {% if status == 'expired' %}selected{% endif %}>已過期</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">篩選</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <table class="table table-hover table-striped align-middle">
+      <thead>
+        <tr>
+          <th>編號</th>
+          <th>主題</th>
+          <th>申請者</th>
+          <th>建立日期</th>
+          <th>結束日期</th>
+          <th>狀態</th>
+          <th class="text-center">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for spec in specs %}
+        <tr>
+          <td>{{ spec.spec_code }}</td>
+          <td>{{ spec.title }}</td>
+          <td>{{ spec.applicant }}</td>
+          <td>{{ spec.created_at.strftime('%Y-%m-%d') }}</td>
+          <td>{{ spec.end_date.strftime('%Y-%m-%d') }}</td>
+          <td>
+            {% if spec.status == 'active' %}
+              <span class="badge fs-6 bg-success bg-opacity-75"><i class="bi bi-check-circle-fill me-1"></i>已生效</span>
+            {% elif spec.status == 'pending_approval' %}
+              <span class="badge fs-6 bg-info bg-opacity-75 text-dark"><i class="bi bi-hourglass-split me-1"></i>待生效</span>
+            {% elif spec.status == 'terminated' %}
+              <span class="badge fs-6 bg-warning bg-opacity-75 text-dark"><i class="bi bi-slash-circle-fill me-1"></i>已終止</span>
+            {% else %}
+              <span class="badge fs-6 bg-secondary bg-opacity-75"><i class="bi bi-calendar-x-fill me-1"></i>已過期</span>
+            {% endif %}
+          </td>
+          <td class="text-center">
+            {# 只有 admin 才能看到啟用按鈕 #}
+              {% if current_user.role == 'admin' %}
+                {% if spec.status == 'pending_approval' %}
+                  <a href="{{ url_for('temp_spec.activate_spec', spec_id=spec.id) }}" class="btn btn-sm btn-primary" title="啟用"><i class="bi bi-check2-circle"></i></a>
+                {% endif %}
+              {% endif %}
+
+              {# editor 或 admin 都能看到展延跟終止按鈕 #}
+              {% if current_user.role in ['editor', 'admin'] %}
+                {% if spec.status == 'active' %}
+                  <a href="{{ url_for('temp_spec.extend_spec', spec_id=spec.id) }}" class="btn btn-sm btn-secondary" title="展延"><i class="bi bi-calendar-plus"></i></a>
+                  <a href="{{ url_for('temp_spec.terminate_spec', spec_id=spec.id) }}" class="btn btn-sm btn-danger" title="終止"><i class="bi bi-x-circle"></i></a>
+                {% endif %}
+              {% endif %}
+
+              {# Admin 專屬的刪除按鈕 #}
+              {% if current_user.role == 'admin' %}
+                <form action="{{ url_for('temp_spec.delete_spec', spec_id=spec.id) }}" method="post" class="d-inline" onsubmit="return confirm('您確定要永久刪除這份規範及其所有相關檔案嗎？此操作無法復原。');">
+                  <button type="submit" class="btn btn-sm btn-danger" title="永久刪除"><i class="bi bi-trash-fill"></i></button>
+                </form>
+              {% endif %}
+
+              {# 下載按鈕 #}
+              {% if spec.status == 'pending_approval' %}
+                {# 待生效狀態的下載按鈕 #}
+                <a href="{{ url_for('temp_spec.download_initial_pdf', spec_id=spec.id) }}" class="btn btn-sm btn-info" title="下載 PDF"><i class="bi bi-file-earmark-pdf-fill"></i></a>
+                {% if current_user.role in ['editor', 'admin'] %}
+                <a href="{{ url_for('temp_spec.download_initial_word', spec_id=spec.id) }}" class="btn btn-sm btn-primary" title="下載 Word"><i class="bi bi-file-earmark-word-fill"></i></a>
+                {% endif %}
+              {% elif spec.uploads %}
+                {# 其他狀態（已生效、終止等），只提供已簽核的 PDF 下載 #}
+                <a href="{{ url_for('temp_spec.download_signed_pdf', spec_id=spec.id) }}" class="btn btn-sm btn-success" title="下載已簽核 PDF"><i class="bi bi-file-earmark-check-fill"></i></a>
+              {% endif %}
+              <a href="{{ url_for('temp_spec.spec_history', spec_id=spec.id) }}" class="btn btn-sm btn-outline-secondary" title="檢視歷史紀錄"><i class="bi bi-clock-history"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <!-- 分頁導覽 -->
+  <div class="card-footer bg-white">
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center mb-0">
+        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+          <a class="page-link" href="{{ url_for('temp_spec.spec_list', page=pagination.prev_num, query=query, status=status) }}">上一頁</a>
+        </li>
+        {% for page_num in pagination.iter_pages() %}
+          {% if page_num %}
+            <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+              <a class="page-link" href="{{ url_for('temp_spec.spec_list', page=page_num, query=query, status=status) }}">{{ page_num }}</a>
+            </li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+          {% endif %}
+        {% endfor %}
+        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+          <a class="page-link" href="{{ url_for('temp_spec.spec_list', page=pagination.next_num, query=query, status=status) }}">下一頁</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+{% endblock %}

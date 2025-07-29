@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}啟用暫時規範{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">上傳簽核檔案以啟用規範</h2>
+
+<div class="card">
+  <div class="card-header">
+    規範編號: <strong>{{ spec.spec_code }}</strong>
+  </div>
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data">
+      <p><strong>主題:</strong> {{ spec.title }}</p>
+      <div class="alert alert-info">
+        請上傳已經過完整簽核的 PDF 檔案。上傳後，此規範的狀態將變為「生效」。
+      </div>
+      <div class="mb-3">
+        <label for="signed_file" class="form-label"><strong>已簽核的 PDF 檔案</strong></label>
+        <input class="form-control" type="file" id="signed_file" name="signed_file" accept=".pdf" required>
+      </div>
+      <button type="submit" class="btn btn-success">上傳並啟用</button>
+      <a href="{{ url_for('temp_spec.spec_list') }}" class="btn btn-secondary">取消</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

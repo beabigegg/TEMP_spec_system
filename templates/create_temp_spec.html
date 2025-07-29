@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block title %}暫時規範建立 - 暫時規範系統{% endblock %}
+
+{% block head %}
+{{ super() }}
+
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+
+<link rel="stylesheet" href="https://uicdn.toast.com/tui-image-editor/latest/tui-image-editor.css" />
+
+<style>
+  #tui-image-editor-container {
+    width: 100%;
+    height: 80vh; /* 增加高度佔比 */
+  }
+
+  .modal-dialog.modal-xl {
+    max-width: 98vw;
+    height: 90vh;
+  }
+
+  .modal-content {
+    height: 100%;
+  }
+
+  .modal-body {
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  #tui-image-editor-container .tui-image-editor {
+    height: 100% !important; 
+  }
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h2 class="mb-4">暫時規範建立</h2>
+    <div class="card">
+      <div class="card-body">
+        <form id="spec-form" method="post">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="serial_number" class="form-label">暫時規範編號</label>
+              <input type="text" class="form-control" id="serial_number" name="serial_number" value="{{ next_spec_code }}" readonly>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="theme" class="form-label">主題/目的</label>
+              <input type="text" class="form-control" id="theme" name="theme" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="applicant" class="form-label">申請者</label>
+              <input type="text" class="form-control" id="applicant" name="applicant" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="applicant_phone" class="form-label">電話(分機)</label>
+              <input type="text" class="form-control" id="applicant_phone" name="applicant_phone">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">站別 (可多選)</label>
+            <div>
+              <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="station" value="點測"> <label>點測</label></div>
+              <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="station" value="切割"> <label>切割</label></div>
+              <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="station" value="晶粒黏著"> <label>晶粒黏著</label></div>
+              <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="station" value="銲線黏著"> <label>銲線黏著</label></div>
+              <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="station" value="錫膏焊接"> <label>錫膏焊接</label></div>
+              <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="station" value="成型"> <label>成型</label></div>
+              <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="station" value="去膠"> <label>去膠</label></div>
+              <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="station" value="吹砂"> <label>吹砂</label></div>
+              <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="station" value="電鍍"> <label>電鍍</label></div>
+              <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="station" value="切彎腳"> <label>切彎腳</label></div>
+              <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="station" value="印字"> <label>印字</label></div>
+              <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="station" value="測試"> <label>測試</label></div>
+              <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="station" value="其他" id="station_other_checkbox"> <label>其他</label></div>
+            </div>
+            <div class="mt-2" id="station_other_input_div" style="display: none;"><input type="text" class="form-control" name="station_other" placeholder="請輸入其他站別"></div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">TCCS</label>
+              <div class="input-group">
+                <select class="form-select" name="tccs_level"><option selected>請選擇 Level...</option><option value="Level 1">Level 1</option><option value="Level 2">Level 2</option><option value="Level 3">Level 3</option><option value="Level 4">Level 4</option></select>
+                <div class="input-group-text">
+                  <div class="form-check form-check-inline mb-0"><input class="form-check-input" type="radio" name="tccs_4m" value="人"> <label>人</label></div>
+                  <div class="form-check form-check-inline mb-0"><input class="form-check-input" type="radio" name="tccs_4m" value="機"> <label>機</label></div>
+                  <div class="form-check form-check-inline mb-0"><input class="form-check-input" type="radio" name="tccs_4m" value="料"> <label>料</label></div>
+                  <div class="form-check form-check-inline mb-0"><input class="form-check-input" type="radio" name="tccs_4m" value="法"> <label>法</label></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="start_date" class="form-label">實施起始日</label>
+              <input type="date" class="form-control" id="start_date" name="start_date" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 mb-3"><label for="package" class="form-label">Package</label><input type="text" class="form-control" id="package" name="package"></div>
+            <div class="col-md-4 mb-3"><label for="lot_number" class="form-label">工單批號</label><input type="text" class="form-control" id="lot_number" name="lot_number"></div>
+            <div class="col-md-4 mb-3"><label for="equipment_type" class="form-label">設備型(編)號</label><input type="text" class="form-control" id="equipment_type" name="equipment_type"></div>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">變更前內容</label>
+            <div id="editor-before"></div>
+            <textarea name="change_before" id="textarea-before" style="display: none;"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">變更後內容</label>
+            <div id="editor-after"></div>
+            <textarea name="change_after" id="textarea-after" style="display: none;"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="data_needs" class="form-label">資料收集需求</label>
+            <textarea class="form-control" id="data_needs" name="data_needs" rows="3" required></textarea>
+          </div>
+          
+          <div class="d-flex justify-content-end">
+            <button type="button" id="preview-btn" class="btn btn-info me-2">預覽</button>
+            <button type="submit" class="btn btn-primary">建立暫時規範</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="imageEditorModal" tabindex="-1" aria-labelledby="imageEditorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imageEditorModalLabel">編輯圖片</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="tui-image-editor-container"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" id="save-image-btn">儲存變更</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script src="https://uicdn.toast.com/tui-image-editor/latest/tui-image-editor.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+  const imageEditorModal = new bootstrap.Modal(document.getElementById('imageEditorModal'));
+  const Editor = toastui.Editor;
+  const ImageEditor = tui.ImageEditor;
+
+  let activeEditorInstance = null;
+  let imageEditorInstance = null;
+  let targetImageElement = null;
+
+  // 上傳圖片至後端，回傳正式 URL
+  const uploadImage = async (blob) => {
+    const formData = new FormData();
+    formData.append('file', blob, 'edited-image.png');
+
+    try {
+      const response = await fetch("{{ url_for('upload.upload_image') }}", {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) throw new Error(`Upload failed: ${response.statusText}`);
+      const result = await response.json();
+      return result.location;
+    } catch (error) {
+      console.error(error);
+      alert('圖片上傳失敗，請檢查網路或聯絡管理員。');
+      return null;
+    }
+  };
+
+  // 判斷圖片來源是否為 blob/base64
+  const isBlobOrBase64 = (url) => url.startsWith('data:') || url.startsWith('blob:');
+
+  // 啟動圖片編輯器（支援本地圖片自動轉正式 URL）
+  const launchImageEditor = async (rawSrc) => {
+    let imageUrl = rawSrc;
+
+    if (isBlobOrBase64(rawSrc)) {
+      try {
+        const blob = await (await fetch(rawSrc)).blob();
+        const uploadedUrl = await uploadImage(blob);
+        if (!uploadedUrl) return;
+        imageUrl = uploadedUrl;
+      } catch (err) {
+        alert("圖片格式無法載入編輯器。");
+        return;
+      }
+    }
+
+    if (imageEditorInstance) imageEditorInstance.destroy();
+
+    imageEditorInstance = new ImageEditor('#tui-image-editor-container', {
+      includeUI: {
+        loadImage: {
+          path: imageUrl,
+          name: 'image'
+        },
+        menuBarPosition: 'bottom'
+      },
+      cssMaxWidth: 1200,
+      cssMaxHeight: 800,
+      usageStatistics: false
+    });
+
+    imageEditorModal.show();
+  };
+
+  // 建立 Markdown 編輯器並綁定圖片點擊
+  const createEditor = (containerId) => {
+    const editor = new Editor({
+      el: document.querySelector(containerId),
+      height: '300px',
+      initialEditType: 'wysiwyg',
+      previewStyle: 'vertical',
+      hooks: {
+        addImageBlobHook: async (blob, callback) => {
+          const newUrl = await uploadImage(blob);
+          if (newUrl) callback(newUrl, 'image');
+        }
+      }
+    });
+
+    // 綁定圖片點擊 → 進入編輯器
+    editor.getEditorElements().wwEditor.addEventListener('click', (event) => {
+      if (event.target.tagName === 'IMG') {
+        activeEditorInstance = editor;
+        targetImageElement = event.target;
+        launchImageEditor(event.target.src);
+      }
+    });
+
+    return editor;
+  };
+
+  const editorBefore = createEditor('#editor-before');
+  const editorAfter = createEditor('#editor-after');
+
+  // 儲存按鈕處理編輯後圖片
+  document.getElementById('save-image-btn').addEventListener('click', async () => {
+    if (!imageEditorInstance) return;
+
+    const dataURL = imageEditorInstance.toDataURL({ multiplier: 2 });
+    const blob = await (await fetch(dataURL)).blob();
+    const newUrl = await uploadImage(blob);
+
+    if (newUrl && activeEditorInstance && targetImageElement) {
+      targetImageElement.src = newUrl;
+
+      // 強制同步內容讓 Markdown 也更新
+      const updatedHtml = activeEditorInstance.getHTML();
+      activeEditorInstance.setHTML(updatedHtml);
+    }
+
+    imageEditorModal.hide();
+  });
+
+  // 表單送出前同步 Markdown 內容
+  document.getElementById('spec-form').addEventListener('submit', function () {
+    if (editorBefore) document.getElementById('textarea-before').value = editorBefore.getMarkdown();
+    if (editorAfter) document.getElementById('textarea-after').value = editorAfter.getMarkdown();
+  });
+
+  // 預覽產生邏輯
+  document.getElementById('preview-btn').addEventListener('click', async function () {
+    let isPreviewing = false;
+    if (isPreviewing) return;
+    isPreviewing = true;
+    this.disabled = true;
+    this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 產生中...';
+
+    const form = document.getElementById('spec-form');
+    const formData = new FormData(form);
+
+    if (editorBefore) formData.set('change_before', editorBefore.getMarkdown());
+    if (editorAfter) formData.set('change_after', editorAfter.getMarkdown());
+
+    let data = Object.fromEntries(formData.entries());
+    const stations = Array.from(form.querySelectorAll('input[name="station"]:checked')).map(el => el.value);
+    if (stations.includes('其他') && data.station_other) {
+      stations[stations.indexOf('其他')] = data.station_other;
+    }
+
+    data.station = stations.join(', ');
+    data.tccs_info = data.tccs_level ? `${data.tccs_level}${data.tccs_4m ? ' (' + data.tccs_4m + ')' : ''}` : '';
+
+    try {
+      const response = await fetch("{{ url_for('temp_spec.preview_spec') }}", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
+      const pdfBlob = await response.blob();
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, '_blank');
+    } catch (error) {
+      console.error(error);
+      alert('預覽失敗，請檢查表單內容或網路。');
+    } finally {
+      isPreviewing = false;
+      this.disabled = false;
+      this.innerHTML = '預覽';
+    }
+  });
+
+  // 顯示其他站別欄位
+  document.getElementById('station_other_checkbox').addEventListener('change', function () {
+    document.getElementById('station_other_input_div').style.display = this.checked ? 'block' : 'none';
+  });
+});
+
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}展延暫時規範{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">展延暫時規範</h2>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category or 'danger' }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="card">
+  <div class="card-header">
+    規範編號: <strong>{{ spec.spec_code }}</strong>
+  </div>
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data">
+      <p><strong>主題:</strong> {{ spec.title }}</p>
+      <p><strong>原結束日期:</strong> {{ spec.end_date.strftime('%Y-%m-%d') }}</p>
+      
+      <div class="mb-3">
+        <label for="new_end_date" class="form-label"><strong>新的結束日期</strong></label>
+        <input type="date" class="form-control" id="new_end_date" name="new_end_date" 
+               value="{{ default_new_end_date.strftime('%Y-%m-%d') }}" required>
+        <div class="form-text">預設為原結束日期後一個月。</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="new_file" class="form-label"><strong>重新上傳檔案 (選填)</strong></label>
+        <input class="form-control" type="file" id="new_file" name="new_file">
+        <div class="form-text">如果本次展延有新的文件版本，請在此上傳。</div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">確認展延</button>
+      <a href="{{ url_for('temp_spec.spec_list') }}" class="btn btn-secondary">取消</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

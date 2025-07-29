@@ -1,0 +1,40 @@
+# --- 敏感資訊 (Sensitive Information) ---
+# 忽略包含所有密鑰和資料庫連線資訊的環境變數檔案。
+.env
+
+# --- Python 相關 (Python Related) ---
+# 忽略虛擬環境目錄。
+.venv/
+venv/
+
+# 忽略 Python 的位元組碼和快取檔案。
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- 使用者上傳與系統產生的檔案 (User Uploads & Generated Files) ---
+# 忽略上傳的已簽核文件 (PDFs)。
+/uploads/
+
+# 忽略系統自動產生的暫時規範文件 (Word, PDF)。
+/generated/
+
+# 忽略使用者在編輯器中上傳的圖片。
+/static/uploads/
+
+# --- IDE / 編輯器設定 (IDE / Editor Settings) ---
+# 忽略 Visual Studio Code 的本機設定。
+.vscode/
+
+# --- 作業系統相關 (Operating System) ---
+# 忽略 macOS 的系統檔案。
+.DS_Store
+
+# 忽略 Windows 的縮圖快取。
+Thumbs.db
+
+# --- Log 檔案 ---
+# 忽略所有日誌檔案。
+*.log
+logs/

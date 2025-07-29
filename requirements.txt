@@ -1,0 +1,12 @@
+flask
+flask-login
+flask-sqlalchemy
+pymysql
+werkzeug
+docx2pdf
+python-docx
+docxtpl
+beautifulsoup4
+lxml
+python-dotenv
+mistune

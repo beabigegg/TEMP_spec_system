@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}提早結束暫時規範{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">提早結束暫時規範</h2>
+
+<div class="card">
+  <div class="card-header">
+    規範編號: <strong>{{ spec.spec_code }}</strong>
+  </div>
+  <div class="card-body">
+    <form method="post">
+      <p><strong>主題:</strong> {{ spec.title }}</p>
+      <div class="alert alert-warning">
+        執行此操作將會立即終止這份暫時規範，狀態將變為「已終止」，結束日期會更新為今天。
+      </div>
+      <div class="mb-3">
+        <label for="reason" class="form-label"><strong>提早結束原因</strong></label>
+        <textarea class="form-control" id="reason" name="reason" rows="4" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-danger">確認終止</button>
+      <a href="{{ url_for('temp_spec.spec_list') }}" class="btn btn-secondary">取消</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
