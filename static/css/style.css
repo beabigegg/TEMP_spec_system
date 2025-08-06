@@ -1,35 +1,130 @@
+/* --- 全域與背景設定 --- */
 body {
-  background-color: #f0f2f5; /* 一個柔和的淺灰色作為備用 */
-  background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);
+  background-color: #0d1117;
+  background-image: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+  background-attachment: fixed;
+  color: #c9d1d9;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+/* --- 強制設定通用元素的文字顏色 --- */
+p, label, th, td, .form-label, .form-check-label, .card-body {
+  color: #c9d1d9;
+}
+
+/* --- 導覽列 --- */
+.navbar {
+  background-color: rgba(13, 17, 23, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #30363d;
+}
+
+/* --- 標題 --- */
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  color: #f0f6fc;
+}
+
+/* --- 卡片與容器 --- */
 .card {
-  border: none;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease-in-out;
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+.card-header, .card-footer {
+  background-color: rgba(22, 27, 34, 0.7);
+  border-bottom: 1px solid #30363d;
+  color: #f0f6fc;
 }
 
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.08);
-}
-
+/* --- 按鈕 --- */
 .btn-primary {
+  background-color: #5865f2; border-color: #5865f2; color: #ffffff;
   transition: all 0.2s ease-in-out;
 }
-
-.btn-primary:hover {
-  transform: scale(1.05);
+.btn-primary:hover, .btn-primary:focus {
+  background-color: #4752c4; border-color: #4752c4;
+  box-shadow: 0 0 0 0.25rem rgba(88, 101, 242, 0.5);
 }
+.btn-success { background-color: #2ea043; border-color: #2ea043; color: #fff; }
+.btn-success:hover { background-color: #268839; border-color: #268839; color: #fff;}
+.btn-danger { background-color: #da3633; border-color: #da3633; color: #fff;}
+.btn-danger:hover { background-color: #b92d2b; border-color: #b92d2b; color: #fff;}
+.btn-warning { background-color: #f0ad4e; border-color: #f0ad4e; color: #0d1117; }
+.btn-warning:hover { background-color: #e39b37; border-color: #e39b37; color: #0d1117;}
+.btn-info { background-color: #0dcaf0; border-color: #0dcaf0; color: #0d1117; }
+.btn-info:hover { background-color: #0baccc; border-color: #0baccc; color: #0d1117;}
+
+/* --- 表單輸入框 --- */
+.form-control, .form-select {
+  background-color: #0d1117; color: #c9d1d9;
+  border: 1px solid #30363d; border-radius: 0.375rem;
+}
+.form-control:focus, .form-select:focus {
+  background-color: #0d1117; color: #c9d1d9;
+  border-color: #5865f2;
+  box-shadow: 0 0 0 0.25rem rgba(88, 101, 242, 0.25);
+}
+.form-control::placeholder { color: #8b949e; }
+.form-control[readonly] { background-color: #161b22; opacity: 0.7; }
+.input-group-text {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+}
+
+/* --- 表格 --- */
+.table {
+  --bs-table-color: #c9d1d9;
+  --bs-table-bg: #161b22;
+  --bs-table-border-color: #30363d;
+  --bs-table-striped-color: #c9d1d9;
+  --bs-table-striped-bg: #21262d;
+  --bs-table-hover-color: #f0f6fc;
+  --bs-table-hover-bg: #30363d;
+  border-color: var(--bs-table-border-color);
+}
+.table > thead {
+  color: #f0f6fc;
+}
+
+/* --- 分頁 --- */
+.pagination {
+  --bs-pagination-color: #58a6ff;
+  --bs-pagination-bg: #0d1117; /* 最深的背景色，使其與容器分離 */
+  --bs-pagination-border-color: #30363d;
+  --bs-pagination-hover-color: #80b6ff;
+  --bs-pagination-hover-bg: #21262d; /* 懸停時變亮 */
+  --bs-pagination-hover-border-color: #4d555e;
+  --bs-pagination-focus-color: #80b6ff;
+  --bs-pagination-focus-bg: #21262d;
+  --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(88, 101, 242, 0.25);
+  --bs-pagination-active-color: #fff;
+  --bs-pagination-active-bg: #5865f2;
+  --bs-pagination-active-border-color: #5865f2;
+  --bs-pagination-disabled-color: #8b949e;
+  --bs-pagination-disabled-bg: #161b22; /* 禁用的背景色，使其看起來凹陷 */
+  --bs-pagination-disabled-border-color: #30363d;
+}
+
+/* --- 提示訊息 (Alerts) --- */
+.alert { border-width: 1px; border-style: solid; }
+.alert-danger { background-color: rgba(218, 54, 51, 0.15); border-color: #da3633; color: #ff8986; }
+.alert-success { background-color: rgba(46, 160, 67, 0.15); border-color: #2ea043; color: #7ce38f; }
+.alert-info { background-color: rgba(13, 202, 240, 0.15); border-color: #0dcaf0; color: #6be2fa; }
+.alert-warning { background-color: rgba(240, 173, 78, 0.15); border-color: #f0ad4e; color: #f0ad4e; }
+
+/* --- 狀態標籤 (Badges) --- */
+.badge { --bs-badge-font-size: 0.8em; --bs-badge-padding-y: 0.4em; --bs-badge-padding-x: 0.7em; }
+.bg-success { background-color: #2ea043 !important; }
+.bg-info { background-color: #0dcaf0 !important; color: #0d1117 !important; }
+.bg-warning { background-color: #f0ad4e !important; color: #0d1117 !important; }
+.bg-secondary { background-color: #8b949e !important; }
+
+/* --- 連結 --- */
+a { color: #58a6ff; }
+a:hover { color: #80b6ff; }
 
 /* 頁面切換的淡入效果 */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-main.container {
-  animation: fadeIn 0.5s ease-in-out;
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+main.container { animation: fadeIn 0.5s ease-in-out; }
